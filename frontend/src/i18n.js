@@ -3,8 +3,8 @@ export const LOCALE = 'pl-PL';
 
 export const t = {
   // ── Header ────────────────────────────────────────────────────────────
-  appTitle:        'Strava Club Dashboard',
-  appSubtitle:     'Analityka sportowa — firma',
+  appTitle:        'Finat - klub sportowy',
+  appSubtitle:     'firmowa rywalizacja sportowa',
   pillActivities:  'Aktywności',
   pillTopCategory: 'Top kategoria',
   pillLeading:     'Lider',
@@ -15,6 +15,7 @@ export const t = {
     'Running & Walking': 'Bieganie i chodzenie',
     'Swimming':          'Pływanie',
     'Gym & Fitness':     'Siłownia i fitness',
+    'Racket Sports':     'Sporty rakietowe',
   },
 
   // ── Activity count (singular / plural) ───────────────────────────────
