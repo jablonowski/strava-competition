@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
+import { t, LOCALE } from './i18n';
 
 // ─── Visual metadata per cluster ──────────────────────────────────────────
 const CLUSTER_META = {
@@ -10,7 +11,7 @@ const CLUSTER_META = {
 };
 const ALL_CLUSTERS = Object.keys(CLUSTER_META);
 
-const CURRENT_MONTH_LABEL = new Date().toLocaleString('en-US', {
+const CURRENT_MONTH_LABEL = new Date().toLocaleString(LOCALE, {
   month: 'long', year: 'numeric',
 });
 
@@ -36,7 +37,7 @@ function CategoryBar({ name, count, total }) {
       <div className="category-header">
         <span className="category-icon" aria-hidden="true">{meta.icon}</span>
         <span className="category-name">{name}</span>
-        <span className="category-count">{count} {count === 1 ? 'activity' : 'activities'}</span>
+        <span className="category-count">{count} {count === 1 ? t.activitySingular : t.activityPlural}</span>
         <span className="category-pct">{pct.toFixed(1)}%</span>
       </div>
       <div className="progress-track" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
@@ -52,11 +53,11 @@ function LeaderboardRow({ athlete, rank }) {
   const dist  = fmtDistance(athlete.totalDistance);
   return (
     <div className={`leaderboard-row${isTop ? ' top-three' : ''}`}>
-      <span className={`rank rank-${rank}`} aria-label={`Rank ${rank}`}>{rank}</span>
+      <span className={`rank rank-${rank}`} aria-label={t.rankLabel(rank)}>{rank}</span>
       <div className="athlete-info">
         <span className="athlete-name">{athlete.name}</span>
         <span className="athlete-sub">
-          {athlete.activityCount} {athlete.activityCount === 1 ? 'activity' : 'activities'}
+          {athlete.activityCount} {athlete.activityCount === 1 ? t.activitySingular : t.activityPlural}
           {dist && <> · {dist}</>}
         </span>
       </div>
@@ -70,8 +71,8 @@ function LeaderboardTabs({ overallLeaderboard, categoryLeaderboards }) {
   const [activeTab, setActiveTab] = useState('overall');
 
   const tabs = [
-    { key: 'overall', label: 'Overall', icon: '🏆', color: '#f97316' },
-    ...ALL_CLUSTERS.map(c => ({ key: c, label: c, icon: CLUSTER_META[c].icon, color: CLUSTER_META[c].color })),
+    { key: 'overall', label: t.tabOverall, icon: '🏆', color: '#f97316' },
+    ...ALL_CLUSTERS.map(c => ({ key: c, label: t.clusterNames[c] || c, icon: CLUSTER_META[c].icon, color: CLUSTER_META[c].color })),
   ];
 
   const list = activeTab === 'overall'
@@ -80,28 +81,28 @@ function LeaderboardTabs({ overallLeaderboard, categoryLeaderboards }) {
 
   return (
     <section className="card" aria-labelledby="section-leaderboard">
-      <h2 className="section-title" id="section-leaderboard">Leaderboards</h2>
-      <p className="section-sub">Ranked by total time · {CURRENT_MONTH_LABEL}</p>
+      <h2 className="section-title" id="section-leaderboard">{t.sectionLeaderboards}</h2>
+      <p className="section-sub">{t.leaderboardSubtitle(CURRENT_MONTH_LABEL)}</p>
 
       <div className="tabs" role="tablist">
-        {tabs.map(t => (
+        {tabs.map(tab => (
           <button
-            key={t.key}
+            key={tab.key}
             role="tab"
-            aria-selected={activeTab === t.key}
-            className={`tab-btn${activeTab === t.key ? ' active' : ''}`}
-            style={activeTab === t.key ? { '--tab-color': t.color } : {}}
-            onClick={() => setActiveTab(t.key)}
+            aria-selected={activeTab === tab.key}
+            className={`tab-btn${activeTab === tab.key ? ' active' : ''}`}
+            style={activeTab === tab.key ? { '--tab-color': tab.color } : {}}
+            onClick={() => setActiveTab(tab.key)}
           >
-            <span aria-hidden="true">{t.icon}</span>
-            <span className="tab-label">{t.label}</span>
+            <span aria-hidden="true">{tab.icon}</span>
+            <span className="tab-label">{tab.label}</span>
           </button>
         ))}
       </div>
 
       <div className="leaderboard-list" role="tabpanel">
         {list.length === 0
-          ? <p className="empty-state">No data for this category yet.</p>
+          ? <p className="empty-state">{t.emptyCategory}</p>
           : list.slice(0, 15).map((athlete, i) => (
               <LeaderboardRow key={athlete.name} athlete={athlete} rank={i + 1} />
             ))
@@ -126,21 +127,21 @@ function WinnersTable({ monthlyWinners }) {
   return (
     <section className="card" aria-labelledby="section-winners">
       <div>
-        <h2 className="section-title" id="section-winners">Monthly Winners</h2>
-        <p className="section-sub">Hall of fame — #1 athlete per category by total time</p>
+        <h2 className="section-title" id="section-winners">{t.sectionWinners}</h2>
+        <p className="section-sub">{t.winnersSubtitle}</p>
       </div>
 
       {monthlyWinners.length === 0 ? (
         <p className="empty-state" style={{ marginTop: '1.5rem' }}>
-          No past winners recorded yet. Click <strong>Close&nbsp;Month</strong> at the end of each month to lock in the results.
+          {t.winnersEmptyBefore}<strong>{t.winnersCloseMonth}</strong>{t.winnersEmptyAfter}
         </p>
       ) : (
         <div className="winners-table-wrap">
           <table className="winners-table">
             <thead>
               <tr>
-                <th className="col-month">Month</th>
-                <th>🏆 Overall</th>
+                <th className="col-month">{t.colMonth}</th>
+                <th>{t.colOverall}</th>
                 {ALL_CLUSTERS.map(c => (
                   <th key={c}>{CLUSTER_META[c].icon} {c}</th>
                 ))}
@@ -173,7 +174,7 @@ function FeedCard({ activity }) {
     <div className="feed-item">
       <span className="feed-dot" style={{ backgroundColor: meta.color }} aria-hidden="true" />
       <div className="feed-info">
-        <span className="feed-title">{activity.name || 'Untitled'}</span>
+        <span className="feed-title">{activity.name || t.untitled}</span>
         <span className="feed-athlete">{name}</span>
       </div>
       <div className="feed-right">
@@ -227,24 +228,24 @@ function Header({ totalActivities, topCategory, topAthlete }) {
         <div className="logo">
           <span className="logo-icon" aria-hidden="true">⚡</span>
           <div>
-            <h1>Strava Club Dashboard</h1>
-            <p className="logo-sub">Corporate Athletics Analytics</p>
+            <h1>{t.appTitle}</h1>
+            <p className="logo-sub">{t.appSubtitle}</p>
           </div>
         </div>
         {totalActivities != null && (
           <div className="stats-pills">
             <div className="pill">
               <span className="pill-value">{totalActivities}</span>
-              <span className="pill-label">Activities</span>
+              <span className="pill-label">{t.pillActivities}</span>
             </div>
             <div className="pill pill-accent">
               <span className="pill-value">{topCategory}</span>
-              <span className="pill-label">Top Category</span>
+              <span className="pill-label">{t.pillTopCategory}</span>
             </div>
             {topAthlete && (
               <div className="pill pill-gold">
                 <span className="pill-value">{topAthlete}</span>
-                <span className="pill-label">Leading</span>
+                <span className="pill-label">{t.pillLeading}</span>
               </div>
             )}
           </div>
@@ -282,9 +283,9 @@ export default function App() {
         <main className="main">
           <div className="card error-card">
             <span className="error-icon" aria-hidden="true">⚠️</span>
-            <h2>Could not load dashboard</h2>
+            <h2>{t.errorTitle}</h2>
             <p>{error}</p>
-            <p className="error-hint">Make sure the backend is running on port 4000 and credentials are in <code>.env</code>.</p>
+            <p className="error-hint">{t.errorHint}</p>
           </div>
         </main>
       </div>
@@ -307,8 +308,8 @@ export default function App() {
 
         {/* ── Category breakdown ── */}
         <section className="card" aria-labelledby="section-categories">
-          <h2 className="section-title" id="section-categories">Most Popular Categories</h2>
-          <p className="section-sub">Total activity count per unified cluster</p>
+          <h2 className="section-title" id="section-categories">{t.sectionCategories}</h2>
+          <p className="section-sub">{t.categoriesSubtitle}</p>
           <div className="categories-list">
             {sortedCategories.map(([name, count]) => (
               <CategoryBar key={name} name={name} count={count} total={totalActivities} />
@@ -329,10 +330,10 @@ export default function App() {
 
         {/* ── Recent feed ── */}
         <section className="card" aria-labelledby="section-feed">
-          <h2 className="section-title" id="section-feed">Recent Corporate Feed</h2>
-          <p className="section-sub">Latest {Math.min(recentActivities.length, 20)} valid activities</p>
+          <h2 className="section-title" id="section-feed">{t.sectionFeed}</h2>
+          <p className="section-sub">{t.feedSubtitle(Math.min(recentActivities.length, 20))}</p>
           <div className="feed-list">
-            {recentActivities.length === 0 && <p className="empty-state">No activities found.</p>}
+            {recentActivities.length === 0 && <p className="empty-state">{t.feedEmpty}</p>}
             {recentActivities.slice(0, 20).map((act, i) => (
               <FeedCard key={i} activity={act} />
             ))}
