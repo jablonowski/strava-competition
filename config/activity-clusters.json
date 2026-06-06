@@ -1,0 +1,7 @@
+{
+  "Cycling": ["Ride", "MountainBikeRide", "GravelRide", "EBikeRide", "VirtualRide"],
+  "Running & Walking": ["Run", "Walk", "NordicWalk", "TrailRun", "VirtualRun"],
+  "Swimming": ["Swim", "OpenWaterSwim"],
+  "Gym & Fitness": ["WeightTraining", "Workout", "Hiit", "Yoga"],
+  "Racket Sports": ["Tennis", "Squash", "Badminton", "Padel"]
+}

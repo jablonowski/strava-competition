@@ -1,0 +1,50 @@
+[
+  {
+    "month": "2026-05",
+    "label": "May 2026",
+    "overall": {
+      "name": "Mateusz J.",
+      "totalMovingTime": 19321,
+      "totalDistance": 104289.69999999998,
+      "activityCount": 5
+    },
+    "Cycling": {
+      "name": "Mateusz J.",
+      "totalMovingTime": 19321,
+      "totalDistance": 104289.69999999998,
+      "activityCount": 5
+    },
+    "Running & Walking": {
+      "name": "Beata S.",
+      "totalMovingTime": 4196,
+      "totalDistance": 9900.9,
+      "activityCount": 2
+    },
+    "Swimming": null,
+    "Gym & Fitness": null
+  },
+  {
+    "month": "2026-04",
+    "label": "April 2026",
+    "overall": {
+      "name": "Mateusz J.",
+      "totalMovingTime": 4693,
+      "totalDistance": 12515.400000000001,
+      "activityCount": 2
+    },
+    "Cycling": {
+      "name": "Mateusz J.",
+      "totalMovingTime": 4693,
+      "totalDistance": 12515.400000000001,
+      "activityCount": 2
+    },
+    "Running & Walking": {
+      "name": "Beata S.",
+      "totalMovingTime": 2661,
+      "totalDistance": 6219,
+      "activityCount": 1
+    },
+    "Swimming": null,
+    "Gym & Fitness": null
+  }
+]

@@ -1,0 +1,4 @@
+◇ injected env (4) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Server listening on http://localhost:4000
+[token] Refreshed. Expires at 2026-05-20T17:59:58.000Z
+[dashboard] 3/3 activities kept. Top athlete: Mateusz J. (1h 18m)
