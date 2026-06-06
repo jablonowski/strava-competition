@@ -19,6 +19,8 @@ build-frontend:
 deploy:
   stage: deploy
   image: node:22-alpine
+  needs:
+    - build-frontend
   before_script:
     - npm install -g firebase-tools
     # Install Cloud Function dependencies
