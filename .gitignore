@@ -5,3 +5,6 @@ dist/
 frontend/dist/
 frontend/node_modules/
 server_test.log
+functions/node_modules/
+functions/.runtimeconfig.json
+.firebase/

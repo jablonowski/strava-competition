@@ -1,0 +1,57 @@
+stages:
+  - build
+  - deploy
+
+# ── Build the Vite frontend ────────────────────────────────────────────────
+build-frontend:
+  stage: build
+  image: node:22-alpine
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+    expire_in: 1 hour
+
+# ── Deploy hosting + function to Firebase ─────────────────────────────────
+deploy:
+  stage: deploy
+  image: node:22-alpine
+  before_script:
+    - npm install -g firebase-tools
+    # Install Cloud Function dependencies
+    - cd functions && npm ci && cd ..
+  script:
+    # Store Strava credentials in Firebase Secret Manager
+    - echo "$STRAVA_CLIENT_ID"     | firebase functions:secrets:set STRAVA_CLIENT_ID     --data-file=- --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+    - echo "$STRAVA_CLIENT_SECRET" | firebase functions:secrets:set STRAVA_CLIENT_SECRET --data-file=- --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+    - echo "$STRAVA_REFRESH_TOKEN" | firebase functions:secrets:set STRAVA_REFRESH_TOKEN --data-file=- --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+    - echo "$STRAVA_CLUB_ID"       | firebase functions:secrets:set STRAVA_CLUB_ID       --data-file=- --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID"
+    # Deploy hosting and functions
+    - |
+      firebase deploy --only hosting,functions \
+        --token "$FIREBASE_TOKEN" \
+        --project "$FIREBASE_PROJECT_ID"
+  environment:
+    name: production
+    url: https://$FIREBASE_PROJECT_ID.web.app
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+# ──────────────────────────────────────────────────────────────────────────
+# Required GitLab CI/CD Variables (Settings → CI/CD → Variables):
+#
+#   FIREBASE_TOKEN        — run `firebase login:ci` locally and paste the token
+#   FIREBASE_PROJECT_ID   — your Firebase project ID (e.g. my-app-12345)
+#   STRAVA_CLIENT_ID      — Strava app client ID
+#   STRAVA_CLIENT_SECRET  — Strava app client secret
+#   STRAVA_REFRESH_TOKEN  — OAuth refresh token for the club account
+#   STRAVA_CLUB_ID        — Strava club ID
+#
+# First-time Firebase project setup (run locally once):
+#   firebase projects:create $FIREBASE_PROJECT_ID
+#   firebase use $FIREBASE_PROJECT_ID
+#   firebase firestore:databases:create --location=europe-west1
+# ──────────────────────────────────────────────────────────────────────────

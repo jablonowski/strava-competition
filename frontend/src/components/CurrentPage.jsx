@@ -7,7 +7,7 @@ export default function CurrentPage() {
   const [error, setError]     = useState(null);
 
   const fetchData = useCallback(() => {
-    fetch('http://localhost:4000/api/dashboard-data')
+    fetch('/api/dashboard-data')
       .then(res => {
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         return res.json();
